@@ -5,10 +5,10 @@ import store from './store'
 import axios from 'axios'  
 import VueAxios from 'vue-axios'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faHeart, faPlus,faTrashAlt, faPencilAlt } from '@fortawesome/free-solid-svg-icons'
+import { faHeart, faPlus, faPencilAlt,faBars, faTimes, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faHeart, faPlus, faTrashAlt, faPencilAlt)
+library.add(faHeart, faPlus, faTrashAlt, faPencilAlt, faBars,faTimes)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false

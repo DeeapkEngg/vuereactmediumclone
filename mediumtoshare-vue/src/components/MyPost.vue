@@ -36,6 +36,7 @@ export default {
     name: 'MyPost',
     props: {
         username: { type: String},
+        tab: {type: Number}
     },
     components: {
       Tiles,
@@ -50,6 +51,7 @@ export default {
            currentPage: 1,
            itemPerPage: 10,
            limit:30,
+           articlesCount: null,
            offset:0,
            total:29,
            isforward: true,
@@ -79,17 +81,21 @@ export default {
             this.currentPage = this.currentPage + 1
             this.isforward = true
         } else {
+              if(this.articlesCount != this.PostFeed.length){
               this.offset = this.PostFeed.length + this.total
               this.loader = true
               this.axios.get(this.url)
                   .then(({data}) =>  { 
                     this.loader = false
-                    this.PostFeed.push(...data.articles)
-                    this.currentPage = this.currentPage + 1
+                    if(data.articles.length){
+                       this.PostFeed.push(...data.articles)
+                       this.currentPage = this.currentPage + 1
+                    }
                   })
                   .catch(({ response: { data } }) => { 
                       this.error = data.error || 'Internal server error' 
                   })
+              }
         }
       
        }
@@ -110,18 +116,23 @@ export default {
     }
   },
 
-  created () {
-            const url = `/articles?author=${this.username}&limit=${this.limit}&offset=${this.offset}`
-            this.url = url
+  created() {
+        
+        if(this.tab === 0){
+          this.url = `/articles?author=${this.username}&limit=${this.limit}&offset=${this.offset}`
+        }
+        else{
+          this.url = `/articles?favorited=${this.username}&limit=${this.limit}&offset=${this.offset}`
+        }
             this.axios.get(this.url)
             .then(({data}) =>  { 
                 this.loader = false
+                this.articlesCount = data.articlesCount
                 this.PostFeed.push(...data.articles)
             })
             .catch(({ response: { data } }) => { 
                 this.error = data.error || 'Internal server error' 
             })
-
     }
 }
 </script>

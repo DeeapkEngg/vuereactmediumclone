@@ -6,7 +6,7 @@
 <script>
 
 export default {
-    name: "Tiles",
+    name: "Loader",
     props:{
        isloading:{ type: Boolean, default: false}
     }

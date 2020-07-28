@@ -26,10 +26,18 @@ beforeCreate () {
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   margin:0 6rem;
+   width:80%;
 }
 body{
   margin: 0;
   padding: 0;
-  }
+}
+
+@media screen  and (max-width: 700px){
+ #app{
+   margin: 0;
+   width:100%;
+ }
+}
 
 </style>

@@ -12,25 +12,25 @@
          <div class="createDate">
             <span>{{created}}</span>
          </div>
-         <div class="follow" v-if="!isloggedIn"> 
+         <div class="follow" v-if="!isAuthor"> 
            <div class="option" v-on:click="handleFollow"  :class="[follow]">
               <font-awesome-icon :icon="['fa', 'plus']"/>
               <span>{{followBtn}}</span>
              </div>
          </div>
-          <div class="favorite" v-if="!isloggedIn"> 
+          <div class="favorite" v-if="!isAuthor"> 
            <div class="option" v-on:click="handleCount" :class="[fav]">
               <font-awesome-icon :icon="['fa', 'heart']"/>
               <span>{{favoriteBtn}}({{counter}})</span>
            </div>
          </div>
-            <div class="edit" v-if="isloggedIn"> 
+            <div class="edit" v-if="isAuthor"> 
            <div class="option" v-on:click="handleEdit"  >
               <font-awesome-icon :icon="['fa', 'pencil-alt']"/>
               <span>Edit Article</span>
            </div>
          </div>
-            <div class="delete" v-if="isloggedIn"> 
+            <div class="delete" v-if="isAuthor"> 
            <div class="option" v-on:click="handleDelete">
               <font-awesome-icon :icon="['fa', 'trash-alt']"/>
               <span>Delete Article</span>
@@ -42,26 +42,32 @@
         {{post.body}}
       </div>
       <hr/>
-      <div class="tag"> 
+      <div class="tag" v-if="tag.length"> 
         <b>Tags -</b>
         <Tag :tags="tag" />
       </div>
       <hr/>
-      <div class="postCommentBox">
-         <textarea></textarea>
-         <div class="commentOption">
-            <button>Submit</button>
-         </div>
-      </div>
+       <div  v-if="isLoggedIn">
+        <div class="postCommentBox">
+            <textarea v-model="comment"></textarea>
+            <div class="commentOption">
+                <button v-on:click="commentHandler">Submit</button>
+            </div>
+        </div>
       <hr/>
-      <div class="postCommentBox"  v-for="comment in comments"  :key="comment.id">
-         <textarea disabled value="comment.body"></textarea>
-         <div class="comment">
-           <img :src="userImg">
-           <span>{{comment.author.username}}</span>
-           <span>{{dateConversion(comment.createdAt)}}</span>
-           <span><font-awesome-icon :icon="['fa','trash', 'Alt']" /></span>
-         </div>
+     
+        <div class="postCommentBox"  v-for="comment in comments"  :key="comment.id">
+            <textarea disabled v-model="comment.body"></textarea>
+            <div class="comment">
+            <img :src="userImg">
+            <span><router-link :to="'/mypage/'+comment.author.username">{{comment.author.username}}</router-link></span>
+            <span>{{dateConversion(comment.createdAt)}}</span>
+            <span class="deleteIcon" v-if="comment.author.username === loggedInUser" v-on:click="deleteComment(comment.id)"><font-awesome-icon :icon="['fa','trash-alt']" /></span>
+            </div>
+        </div>
+      </div>
+      <div v-if="!isLoggedIn">
+        <router-link to='/Auth'>SignIn </router-link> or <router-link to='/Auth'>SignUp </router-link> to post a comment
       </div>
   </div>   
  </div> 
@@ -92,6 +98,16 @@ export default {
         },
         followBtn() {
             return this.isFollow ? 'Unfollow' : 'follow'
+        },
+        isLoggedIn() {
+            return this.$store.state.isLoggedIn
+        },
+        isAuthor() {
+            const check = this.$store.state.username === this.username
+            return this.$store.state.isLoggedIn && check
+        },
+        loggedInUser() {
+           return this.$store.state.username
         }
     },
     data(){
@@ -102,12 +118,13 @@ export default {
            userImg: null,
            created: null,
            comments: null,
-           isloggedIn: false,
            username: null,
            slug:null,
            favorite:false,
            isFollow:false,
            tag: null,
+           comment: '',
+           
        }
     },
    methods: {
@@ -122,14 +139,55 @@ export default {
             },
 
             handleDelete() {
-            const url = `/articles/${this.slug}`
-            const token = this.$store.state.token
-            const headers = this.Header(token)
-            this.axios.delete(url,{headers})
-            .then(() =>  {
-                this.$router.push('/')
-            })
-            .catch(({response: {data}}) => ({ error: data.error || 'Internal server error' }))
+                const url = `/articles/${this.slug}`
+                const token = this.$store.state.token
+                const headers = this.Header(token)
+                this.axios.delete(url,{headers})
+                .then(() =>  {
+                    this.$router.push('/')
+                })
+                .catch(({response: {data}}) => ({ error: data.error || 'Internal server error' }))
+            },
+
+            fetchComment(slug) {
+                 this.axios.get(`/articles/${slug}/comments`)
+                    .then(({data}) =>  { 
+                        this.comments = data.comments
+                    })
+                    .catch(({ response: { data } }) => { 
+                        this.error = data.error || 'Internal server error' 
+                    })
+                },
+            
+
+            commentHandler() {
+                if(this.comment){
+                      const data = {
+                        comment : {
+                            body : this.comment
+                        }
+                      }
+                    const tokenValue = this.$store.state.token 
+                    const headers = this.Header(tokenValue)
+                     this.axios.post(`/articles/${this.slug}/comments`, data, { headers })
+                    .then(() => {
+                         this.comment = ''
+                         this.fetchComment(this.slug)
+                    })
+                    .catch(({response: {data}}) => ({ error: data.error || 'Internal server error' }))
+                
+                }
+            },
+
+            deleteComment(id) {
+                    const tokenValue = this.$store.state.token 
+                    const headers = this.Header(tokenValue)
+                    this.axios.delete(`/articles/${this.slug}/comments/${id}`, { headers})
+                    .then(() =>  {
+                        this.fetchComment(this.slug)
+                    })
+                    .catch(({response: {data}}) => ({ error: data.error || 'Internal server error' }))
+
             }
   
    },
@@ -145,8 +203,7 @@ export default {
              this.username =  data.article.author.username
              this.userImg =  data.article.author.image || profile
              this.created = this.dateConversion(data.article.createdAt)
-             const isAuthor =  this.$store.state.username === data.article.author.username
-             this.isloggedIn = this.$store.state.isLoggedIn && isAuthor
+            
              this.counter = data.article.favoritesCount
              this.isFav = data.article.favorited
              this.isFollow = data.article.author.following
@@ -157,14 +214,8 @@ export default {
               this.loader = false
               this.error = data.error || 'Internal server error' 
           })
+        this.fetchComment(slug)
 
-      this.axios.get(`/articles/${slug}/comments`)
-          .then(({data}) =>  { 
-             this.comments = data.comments
-          })
-          .catch(({ response: { data } }) => { 
-              this.error = data.error || 'Internal server error' 
-          })
       }
 
     }
@@ -348,5 +399,9 @@ textarea{
     margin-top: 1rem;
     margin-bottom: 1rem;
     padding:1rem;
+}
+.deleteIcon{
+    display: flex;
+    justify-content: flex-end
 }
 </style>

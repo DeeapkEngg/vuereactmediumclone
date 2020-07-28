@@ -19,11 +19,8 @@
        </div>
     </div><hr/>
     <div class="TabContent">
-       <div v-if="currentTab === 0">
-          <MyPost :username="username" :key="username"></MyPost>
-       </div>
-        <div v-if="currentTab === 1">
-          <MyFav :username="username" :key="username"></MyFav>
+       <div>
+          <MyPost :username="username" :key="currentTab" :tab="currentTab"></MyPost>
        </div>
     </div>
  </div>
@@ -32,15 +29,13 @@
 <script>
 import profile from '../assets/profile.jpg'
 import MyPost from './MyPost.vue'
-import MyFav from './MyFav.vue'
 import {myMixin} from './common/methods/method.js'
 
 export default {
     name: 'MyPage',
     mixins:[myMixin],
     components: {
-        MyPost,
-        MyFav
+        MyPost
     },
     data(){
        return {
@@ -70,6 +65,17 @@ export default {
         },
         Handler(index){
             this.currentTab = index
+        },
+
+        getData(username) {
+              this.axios.get(`/profiles/${username}`)
+                .then(({data}) => {
+                    this.imgSrc = data.profile.image || profile
+                    this.bio = data.profile.bio
+                    this.isFollow = data.profile.following
+                    this.username = data.profile.username
+                    this.currentTab = 0
+                })
         }
 
     },
@@ -85,18 +91,20 @@ export default {
         }
     },
 
-    
+    watch: {
+        '$route.params.username': function (newVal, oldVal) {
+                    if(oldVal !== newVal){
+                        this.getData(newVal)
+                    }
+        }
+    },
 
-    created () {
+    created(){
      const username = this.$route.params.username
      this.username = username
-      this.axios.get(`/profiles/${username}`)
-      .then(({data}) => {
-          this.imgSrc = data.profile.image || profile
-          this.bio = data.profile.bio
-          this.isFollow = data.profile.following
-      })
-    }
+      this.getData(this.username)
+    },
+   
 }
 </script>
 <style scoped>

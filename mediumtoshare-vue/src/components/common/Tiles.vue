@@ -57,7 +57,7 @@ export default {
     },
     computed: {
         vcount() {
-           return this.counter && !this.isFavs ? 'favCount': 'favNoCount'
+           return this.counter && this.isFav ? 'favCount': 'favNoCount'
         },
         like() {
             return this.likeProcess ? 'notAllowed' : ''
@@ -162,6 +162,7 @@ img{
     display: flex;
     flex-direction: column;
     align-content: center;
+    max-width: 40rem;
 }
 .title{
     font-weight: bold;

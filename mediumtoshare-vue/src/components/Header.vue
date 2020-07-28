@@ -5,7 +5,11 @@
             <img src="../assets/logo.png" />
         </router-link>
     </div>
-    <nav>
+    <div class="bar" v-on:click="toggleHandler">
+      <font-awesome-icon :icon="['fa','bars']"  v-show="!toggle"/>
+      <font-awesome-icon :icon="['fa','times']" v-show="toggle"/>
+    </div>
+    <nav :class="[show]">
         <ul>
              <li><router-link to="/" exact active-class="activeOne">Home</router-link></li>
              <li v-if="isloggedIn"><router-link to="/newArticle" exact active-class="activeOne"> New Article</router-link></li>
@@ -22,30 +26,41 @@
 
 export default {
     name: 'Header',
+    data() {
+        return {
+            toggle: false
+        }
+    },
     computed: {
-    
        isloggedIn() {
          return this.$store.state.isLoggedIn
        },
-
        username() {
            return this.$store.state.username
+       },
+       show(){
+           return !this.toggle ? 'toggle' : ''
        }
-  
   },
   methods: {
       logout() {
            window.localStorage.removeItem('token')
            this.$store.dispatch('clearLoggedIn')
            this.$router.push('/Auth')
-      }
-  }
+      },
+      toggleHandler() {
+          this.toggle =  !this.toggle
+      },
+ 
+  },
 
 }
 </script>
 <style scoped>
+
+@media screen  and (min-width: 700px){
 main{
- width: 100%;
+     width: 100%;
     height: 5rem;
     background-color: gray;
     margin: 0 auto;
@@ -114,5 +129,86 @@ li > a {
     color: black;
     border-radius: 10%;
     transition: 0.5s;
+}
+.bar{
+    display: none;
+}
+}
+@media screen  and (max-width: 700px){
+    *{
+        margin:0;
+        padding: 0
+    }
+    main{
+    width: 100%;
+    height: 3rem;
+    background-color: gray;
+    margin: 0 auto;
+    margin-top: 0;
+    display: flex;
+    box-sizing: border-box;
+    box-shadow:-5rem 1rem 8rem 14px lightgrey;
+    background: #fff;
+    justify-content: flex-end;
+    min-width: 10rem;
+} 
+    main .logo {
+    width: 6rem;
+    height: 100%;
+    flex: 9;
+    display: flex;
+    align-items: center;
+    padding-left: 1rem;
+    }
+    .logo a img {
+        width: 3rem;
+        height: 100%;
+    }
+    .main{
+        position: relative;
+    }
+    nav{
+        position: absolute;
+        right: 0;
+        background: black;
+        top: 3rem;
+        z-index: 999; 
+    }
+    nav ul {
+        display: flex;
+        flex-direction: column;
+        width: 10rem;
+    }
+    nav ul li {
+        width: 100%;
+        height: 2rem;
+        list-style: none;
+        text-align: center;
+        color:white;
+    }
+    nav ul li a{
+        text-decoration: none;
+        color: white;
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: 1px solid black;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    nav ul li a:hover{
+         color:black;
+         background:white;
+    }
+    .bar {
+        width: 4rem;
+        height: 100%;
+        font-size: 2rem;
+        flex:1;
+    }
+    .toggle{
+        display: none
+    }
 }
 </style>

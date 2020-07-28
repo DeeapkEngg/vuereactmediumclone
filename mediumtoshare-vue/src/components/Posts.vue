@@ -1,7 +1,19 @@
 <template>
  <div class="content" >
-   <Loader :isloading="loader" />
-  <div class="post" v-if="!loader">
+
+  <Loader :isloading="loader" />
+  <div class="post" v-if="!loader"> 
+  <div class="tabs">
+     <div class="tab" v-for="(tab,index) in tabs" :key="index" 
+       :class="[
+          currentTab === index ? 'activeTab' : ''
+        ]"
+     >
+        <button v-if="!(index === 2 && tag === null)"
+        v-on:click="tabHandler(index)" 
+       >{{tab}}{{index === 2 ? tag : ''}}</button>
+     </div>
+  </div>
    <div v-for="(feed,index) in getItemPerPage" :key="index">
       <Tiles 
       :title="feed.title" 
@@ -28,7 +40,7 @@
     <span>Popular Tags</span>
      <div class="data">
         <div class="tag" v-for="(tag,index) in tagsArr" :key="index">
-            {{tag}}
+           <span v-on:click="tagHandler(tag)"> {{tag}} </span>
         </div>
      </div>
    </div> 
@@ -60,12 +72,56 @@ export default {
            offset:0,
            total:29,
            isforward: true,
+           currentTab: 0,
+           tabs: ['Your Feed', 'Global Feed','#'],
+           tag:null,
+           
        }
     },
   methods: {
     pageHandler(page) {
       this.currentPage =  page
     },
+    tagHandler(tag) {
+        this.tag = tag
+        this.currentTab = 2
+    },
+    getUrl(index){
+        const url = {
+             0: `/articles/feed?limit=${this.limit}&offset=${this.offset}`,
+             1: `/articles?limit=${this.limit}&offset=${this.offset}`,
+             2: `/articles?limit=${this.limit}&offset=${this.offset}&tag=${this.tag}`
+           }
+          return url[index]
+    },
+    getData() {
+        this.loader = true
+        const token = this.$store.state.token
+        this.axios.get(this.getUrl(this.currentTab), {headers: this.Header(token)})
+          .then(({data}) =>  { 
+             this.loader = false
+             this.PostFeed.push(...data.articles)
+          })
+          .catch(({ response: { data } }) => { 
+              this.error = data.error || 'Internal server error' 
+          })
+    },
+    getTags() {
+          this.axios.get('/tags').then(({data}) =>{
+              this.tags.push(...data.tags)
+          }).catch(({ response: { data } }) => { 
+              this.error = data.error || 'Internal server error' 
+          })
+    },
+     Header(tokenValue){
+          const header = { 
+              "Content-Type": "application/json; charset=utf-8"
+          }
+          if(tokenValue){
+              header["Authorization"] =  `Token ${tokenValue}`
+          }
+          return header
+      },
     fetchFeed(type) {
       if(type === 'prev'){
           if(this.currentPage > 1) {
@@ -87,18 +143,14 @@ export default {
         } else {
               this.offset = this.PostFeed.length + this.total
               this.loader = true
-              this.axios.get(`/articles?limit=${this.limit}&offset=${this.offset}`)
-                  .then(({data}) =>  { 
-                    this.loader = false
-                    this.PostFeed.push(...data.articles)
-                    this.currentPage = this.currentPage + 1
-                  })
-                  .catch(({ response: { data } }) => { 
-                      this.error = data.error || 'Internal server error' 
-                  })
+              this.currentPage = this.currentPage + 1
+              this.getData()
         }
       
        }
+    },
+    tabHandler(index) {
+        this.currentTab = index
     }
   },
   
@@ -113,24 +165,37 @@ export default {
     },
     totalItem() {
       return this.PostFeed.length
-    }
+    },  
   },
 
   created () {
-        this.axios.get(`/articles?limit=${this.limit}&offset=${this.offset}`)
-          .then(({data}) =>  { 
-             this.loader = false
-             this.PostFeed.push(...data.articles)
-          })
-          .catch(({ response: { data } }) => { 
-              this.error = data.error || 'Internal server error' 
-          })
+        
+          this.getData()
+          this.getTags()
+    },
 
-          this.axios.get('/tags').then(({data}) =>{
-              this.tags.push(...data.tags)
-          }).catch(({ response: { data } }) => { 
-              this.error = data.error || 'Internal server error' 
-          })
+    watch: {
+      currentTab: function(newV, oldVal){
+          if(oldVal != newV){
+            this.isforward = true
+            this.currentPage = 1
+            this.PostFeed = []
+            this.offset = 0
+            this.getData()
+          }
+          if(this.tag && (newV === 0 || newV ===1)){
+            this.tag = null
+          }
+      },
+      tag: function(newV,oldVal){
+            if(newV != oldVal && newV){
+               this.isforward = true
+              this.currentPage = 1
+              this.PostFeed = []
+              this.offset = 0
+              this.getData()
+            }
+      }
     }
 }
 </script>
@@ -146,6 +211,7 @@ export default {
   min-width: 0;
   position: relative;
   min-height: 500px;
+  grid-template-rows: 1fr 14rem;
 }
 }
 @media screen and (min-width:1000px) {
@@ -198,5 +264,31 @@ export default {
     border-radius: 20%;
     padding: 0.4rem;
 }
+.tag:hover{
+  background: darkgray;
+  cursor: pointer;
+}
+
+.tabs{
+  display: flex;
+  justify-content: flex-start;
+  border-bottom: 0.20rem solid lightgray;
+  margin-bottom: 1rem;
+}
+
+.tab{
+  padding-right: 1rem;
+}
+
+.tab button{
+    height: 2rem;
+    background: transparent;
+    border: none;
+    outline: none;
+}
+.activeTab {
+   border-bottom: 0.20rem solid lightgray !important;
+}
+
 
 </style>
