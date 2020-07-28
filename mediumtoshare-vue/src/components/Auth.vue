@@ -6,28 +6,34 @@
         <img src="../assets/login.jpg" />
        </div>
        <div class=form>
+           <div v-if="error" class="check">
+            <span class="error" v-for="(error,index) in renderError" :key="index">
+                {{error}}
+            </span>
+         </div>
           <h1>Sign In</h1>
           <input type="text" v-model="lusername" placeholder="Username">
           <input type="password" v-model="lpassword" placeholder="Password">
           <button v-on:click="submitForm($event,'login')">Login</button>
           <p>Don't have an account ? <span class="link" v-on:click="toggleView">SIGNUP </span></p>
-          <div class="showError" v-if="error">
-             {{renderError()}}
-          </div>
+         
        </div>
     </div>
     <div class="Register" v-if="view === 'register'" >
       
        <div class=form>
+        <div class="check" v-if="error">
+           <span class="error" v-for="(err,index) in renderError" :key="index">
+                {{err}}
+            </span>
+          </div>
           <h1>Sign Up</h1>
           <input type="text" v-model="remail" placeholder="Email">
           <input type="text" v-model="rusername" placeholder="Username">
           <input type="password" v-model="rpassword" placeholder="Password">
           <button v-on:click="submitForm($event,'register')">Register</button>
           <p>Already have an account ? <span class="link" v-on:click="toggleView">SIGNIN </span></p>
-          <div class="showError" v-if="error">
-             {{renderError()}}
-          </div>
+      
        </div>
         <div class="image">
            <img src="../assets/logout.jpg" />
@@ -38,6 +44,7 @@
 
 <script>
 import Loader from './common/Loader'
+import {commonMethod} from './common/methods/method'
 
 
 export default {
@@ -45,7 +52,7 @@ export default {
     components: {
       Loader
     },
-  
+    mixins:[commonMethod],
     data(){
        return {
            post : null,
@@ -59,11 +66,15 @@ export default {
            remail: ''
        }
     },
-   methods: {
-       renderError() {
-           console.log('renderError')
+    computed: {
+          renderError() {
+           return this.error
        },
+    },
+   methods: {
+     
        toggleView() {
+           this.error = null
             if(this.view === 'login'){
                  this.view = 'register'
             } else {
@@ -72,6 +83,7 @@ export default {
        },
        submitForm($event,formType) {
             $event.preventDefault();
+            this.error = ''
             if(formType === 'login') {
             this.axios.post('/users/login', {
                 "user":{
@@ -88,7 +100,26 @@ export default {
                     window.localStorage.setItem('token', data.user.token)
                     this.$router.push("/")
                 })
-                 .catch(({ response: { data } }) => ({ error:(data.errors) }))
+                 .catch(({ response: { data } }) => { this.error = this.ObjectToArray(data.errors) })
+            } 
+             if(formType === 'register') {
+            this.axios.post('/users', {
+                "user":{
+                "email": this.remail,
+                "username": this.rusername,
+                "password": this.lpassword
+                },})
+                .then(({data}) => {
+                    const obj = {
+                        value : true,
+                        token : data.user.token,
+                        username: data.user.username
+                    }
+                    this.$store.dispatch('setLoggedIn',obj)
+                    window.localStorage.setItem('token', data.user.token)
+                    this.$router.push("/")
+                })
+                 .catch(({ response: { data } }) => { this.error = this.ObjectToArray(data.errors) })
             } 
        }
    },
@@ -192,7 +223,16 @@ h1{
     font-weight: 600;
     text-decoration: none;
 }
-
+.error{
+    font-size: 10px;
+    color: red;
+    
+}
+.check{
+    display: flex;
+   align-items: center;
+   flex-direction: column;
+}
  @media(max-width:991px) {
         .Login,.Register{
           max-width: 400px;

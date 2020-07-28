@@ -9,9 +9,9 @@
           currentTab === index ? 'activeTab' : ''
         ]"
      >
-        <button v-if="!(index === 2 && tag === null)"
+        <button v-if="tab.stats"
         v-on:click="tabHandler(index)" 
-       >{{tab}}{{index === 2 ? tag : ''}}</button>
+       >{{tab.name}}{{index === 2 ? tag : ''}}</button>
      </div>
   </div>
    <div v-for="(feed,index) in getItemPerPage" :key="index">
@@ -52,9 +52,11 @@
 import Tiles from './common/Tiles'
 import Loader from './common/Loader'
 import Pagination from './common/Pagination'
+import {commonMethod} from './common/methods/method'
 
 export default {
     name: 'Post',
+    mixins:[commonMethod],
     components: {
       Tiles,
       Loader,
@@ -73,7 +75,7 @@ export default {
            total:29,
            isforward: true,
            currentTab: 0,
-           tabs: ['Your Feed', 'Global Feed','#'],
+           tabs: [{ stats: true, name: 'Your Feed'}, { stats: true, name: 'Global Feed'},{ stats: false, name: '#'}],
            tag:null,
            
        }
@@ -85,6 +87,7 @@ export default {
     tagHandler(tag) {
         this.tag = tag
         this.currentTab = 2
+        this.tabs[this.currentTab].stats = true
     },
     getUrl(index){
         const url = {
@@ -103,25 +106,19 @@ export default {
              this.PostFeed.push(...data.articles)
           })
           .catch(({ response: { data } }) => { 
-              this.error = data.error || 'Internal server error' 
+              this.loader = false
+              this.error = this.ObjectToArray(data.error || ['Internal server error']) 
           })
     },
     getTags() {
           this.axios.get('/tags').then(({data}) =>{
               this.tags.push(...data.tags)
           }).catch(({ response: { data } }) => { 
-              this.error = data.error || 'Internal server error' 
+              this.loader = false
+              this.error = this.ObjectToArray(data.error || ['Internal server error']) 
           })
     },
-     Header(tokenValue){
-          const header = { 
-              "Content-Type": "application/json; charset=utf-8"
-          }
-          if(tokenValue){
-              header["Authorization"] =  `Token ${tokenValue}`
-          }
-          return header
-      },
+
     fetchFeed(type) {
       if(type === 'prev'){
           if(this.currentPage > 1) {
@@ -151,6 +148,7 @@ export default {
     },
     tabHandler(index) {
         this.currentTab = index
+        this.tabs[2].stats = false
     }
   },
   
@@ -169,7 +167,11 @@ export default {
   },
 
   created () {
-        
+         const token =  this.$store.state.token
+         if(!token) {
+           this.currentTab = 1;
+           this.tabs[0].stats = false
+         }
           this.getData()
           this.getTags()
     },

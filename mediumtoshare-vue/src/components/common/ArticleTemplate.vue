@@ -93,18 +93,18 @@ export default {
           const article = {
             body: this.body,
             description: this.description,
-            tagList: this.tags.split(','),
+            tagList: this.tags ? this.tags.split(',') : '',
             title:this.title
          }
           this.$emit('handler',article)
        },
-        Header(tokenValue){
-        const header = { "Content-Type": "application/json; charset=utf-8"}
-        if(tokenValue) {
-            header["Authorization"] =  `Token ${tokenValue}`
-          }
-        return header
-       },
+         Header(tokenValue){
+         const header = { "Content-Type": "application/json; charset=utf-8"}
+         if(tokenValue) {
+               header["Authorization"] =  `Token ${tokenValue}`
+            }
+         return header
+         },
 
     },
 

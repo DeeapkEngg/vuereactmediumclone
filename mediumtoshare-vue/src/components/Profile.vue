@@ -59,9 +59,10 @@
 </template>
 
 <script>
-
+import {commonMethod} from './common/methods/method'
 export default {
     name: 'Profile',
+    mixins:[commonMethod],
     data(){
        return {
           password:"",
@@ -89,28 +90,9 @@ export default {
              this.status = "Profile updated successfully"
         })
          .catch(({ response: { data } }) => {
-             this.error = data.errors ? this.ObjectToArray(data.errors) :  'Internal server error' 
+             this.error = data.errors ? this.ObjectToArray(data.errors) :  ['Internal server error']
          })
-
-    
     },
-     Header(tokenValue){
-        const header = { "Content-Type": "application/json; charset=utf-8"}
-        if(tokenValue) {
-            header["Authorization"] =  `Token ${tokenValue}`
-          }
-        return header
-    },
-
-    ObjectToArray(obj){
-        const objArr = []
-        Object.entries(obj).forEach(([key,value]) => {
-            objArr.push(`${key} ${value}`)
-        })
-       return objArr
-    }
-
-
   },
 
   computed: {

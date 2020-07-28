@@ -7,15 +7,6 @@ export const myMixin = {
     }
  },
   methods: {
-        Header(tokenValue){
-          const header = { 
-              "Content-Type": "application/json; charset=utf-8"
-          }
-          if(tokenValue){
-              header["Authorization"] =  `Token ${tokenValue}`
-          }
-          return header
-      },
       handleCount(){
                 
         const url = `/articles/${this.slug}/favorite`
@@ -38,6 +29,13 @@ export const myMixin = {
         }
        
     },
+    Header(tokenValue){
+      const header = { "Content-Type": "application/json; charset=utf-8"}
+      if(tokenValue) {
+          header["Authorization"] =  `Token ${tokenValue}`
+        }
+      return header
+  },
     handleFollow(){
                 
       const url = `/profiles/${this.username}/follow`
@@ -59,3 +57,30 @@ export const myMixin = {
   }
   }
 };
+
+export const commonMethod = {
+  methods: {
+    ObjectToArray(obj){
+      const objArr = []
+      Object.entries(obj).forEach(([key,value]) => {
+          console.log(value)
+          if(value.length > 1){
+             value.forEach((item) => {
+                objArr.push(`${key} ${item}`)
+             })
+
+          } else {
+          objArr.push(`${key} ${value}`)
+          }
+      })
+     return objArr
+   },
+   Header(tokenValue){
+    const header = { "Content-Type": "application/json; charset=utf-8"}
+    if(tokenValue) {
+        header["Authorization"] =  `Token ${tokenValue}`
+      }
+    return header
+},
+  }
+}
