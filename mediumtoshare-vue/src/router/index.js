@@ -1,13 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-import Posts from '../components/Posts.vue'
-import PostDetails from '../components/PostDetails.vue'
-import Auth from '../components/Auth.vue'
-import NewArticle from '../components/NewArticle.vue'
-import EditArticle from '../components/EditArticle.vue'
-import Profile from '../components/Profile.vue'
-import MyPage from '../components/MyPage.vue'
+
 
 Vue.use(VueRouter)
   const routes = [
@@ -15,13 +9,13 @@ Vue.use(VueRouter)
     path: '/',
     component: Home,
     children: [
-      { path: '/', component: Posts},
-      { path: '/post/:slug', component: PostDetails},
-      { path: '/Auth', component: Auth},
-      {path:'/newArticle', component: NewArticle},
-      {path:'/editArticle/:slug', component: EditArticle},
-      {path:'/profile', component: Profile},
-      {path:'/myPage/:username', component: MyPage}
+      {path: '/', component: () => import('../components/Posts.vue')},
+      {path: '/post/:slug', component: () => import('../components/PostDetails.vue')},
+      {path: '/Auth', component: () => import('../components/Auth.vue')},
+      {path:'/newArticle', component: () => import('../components/NewArticle.vue')},
+      {path:'/editArticle/:slug', component: () => import('../components/EditArticle.vue')},
+      {path:'/profile', component: () => import('../components/Profile.vue')},
+      {path:'/myPage/:username', component: () => import('../components/MyPage.vue')}
     ]
   },
  
