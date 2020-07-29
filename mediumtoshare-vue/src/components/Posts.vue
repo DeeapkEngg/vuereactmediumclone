@@ -77,7 +77,6 @@ export default {
            currentTab: 0,
            tabs: [{ stats: true, name: 'Your Feed'}, { stats: true, name: 'Global Feed'},{ stats: false, name: '#'}],
            tag:null,
-           
        }
     },
   methods: {
@@ -166,7 +165,7 @@ export default {
     },  
   },
 
-  created () {
+  mounted () {
          const token =  this.$store.state.token
          if(!token) {
            this.currentTab = 1;
@@ -174,24 +173,22 @@ export default {
          }
           this.getData()
           this.getTags()
+          this.$watch('currentTab', (newV, oldVal) => {
+              if(oldVal != newV){
+                this.isforward = true
+                this.currentPage = 1
+                this.PostFeed = []
+                this.offset = 0
+                this.getData()
+              }
+          
+          })
     },
 
     watch: {
-      currentTab: function(newV, oldVal){
-          if(oldVal != newV){
-            this.isforward = true
-            this.currentPage = 1
-            this.PostFeed = []
-            this.offset = 0
-            this.getData()
-          }
-          if(this.tag && (newV === 0 || newV ===1)){
-            this.tag = null
-          }
-      },
       tag: function(newV,oldVal){
             if(newV != oldVal && newV){
-               this.isforward = true
+              this.isforward = true
               this.currentPage = 1
               this.PostFeed = []
               this.offset = 0
