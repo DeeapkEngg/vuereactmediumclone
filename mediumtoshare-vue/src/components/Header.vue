@@ -71,13 +71,17 @@ main{
     background: #fff;
 } 
 main .logo {
- width: 6rem;
- height: 100%;
- flex: 1;
+    width: 6rem;
+    height: 100%;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 20px;
 }
 .logo a img {
-    width: 100%;
-    height: 100%;
+    width: 80%;
+    height: 80%;
 }
 main nav{
  height: 100%;

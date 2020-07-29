@@ -20,7 +20,7 @@ export default {
     left: 0;
     bottom: 0;
     background: black;
-    opacity: 0.5;
+    opacity: 0.3;
     margin-top: 20px;
     color: white;
     display: flex;
