@@ -3,7 +3,7 @@
          <div class="postDetails">
            <div class="firstRow">
              
-               <img :src="img"/>
+               <img :src="Image"/>
                <div class="userInfo">
                  <div><router-link :to="'/mypage/'+createdBy">{{createdBy}}</router-link></div>
                  <div>{{createDate}}</div>
@@ -16,7 +16,7 @@
                   <span v-else>
                    <font-awesome-icon :icon="['fa', 'heart']"/>
                   </span>
-                  <span>{{counter}}</span>
+                  <span>{{count}}</span>
                   </div>
                </div>
               </div>
@@ -51,17 +51,23 @@ export default {
     data(){
         return {
             showReadMore: false,
-            createDate: null,
-            img: null
         }
     },
     computed: {
         vcount() {
-           return this.counter && this.isFav ? 'favCount': 'favNoCount'
+           return this.count && this.isFavourite ? 'favCount': 'favNoCount'
         },
         like() {
             return this.likeProcess ? 'notAllowed' : ''
-        }
+        },
+        Image(){
+            return this.image || Profile
+        },
+        createDate() {
+            const dt =  new Date(this.createdDate).toDateString()
+            return dt.split(' ').slice(1).join(',')
+        },
+    
     },
     
     methods:  {
@@ -75,13 +81,6 @@ export default {
             },
             
      },
-     created() {
-         const dt =  new Date(this.createdDate).toDateString()
-         this.createDate = dt.split(' ').slice(1).join(',')
-         this.counter = this.count
-         this.isFav = this.isFavourite
-         this.img = this.image || Profile
-     }   
 }
 </script>
 <style scoped>
