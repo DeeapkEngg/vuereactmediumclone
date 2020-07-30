@@ -60,15 +60,17 @@ export default {
 
 @media screen  and (min-width: 700px){
 main{
-     width: 100%;
+    width: 100%;
     height: 5rem;
     background-color: gray;
     margin: 0 auto;
     margin-top: 0;
     display: flex;
     box-sizing: border-box;
-    box-shadow: 1rem 1rem 3rem lightgrey, -1rem -1rem 3rem lightgrey;
+    box-shadow: 0.5rem 0.5rem 1rem lightgrey, -0.5rem -0.5rem 1rem lightgrey;
     background: #fff;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
 } 
 main .logo {
     width: 6rem;
@@ -77,11 +79,18 @@ main .logo {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-left: 20px;
+    
 }
 .logo a img {
-    width: 80%;
-    height: 80%;
+    width: 60%;
+    height: 60%;
+    transition: 1s ease;
+    padding: 1rem;
+    
+}
+.logo a img:hover{
+    transform: scale3d(0.9,0.9,0.9) skew(10deg,10deg) rotate(-10deg) translateX(10px);
+    box-shadow: 1rem -0.75rem 2rem lightgray;
 }
 main nav{
  height: 100%;
@@ -109,10 +118,10 @@ main nav ul li {
 }
 
 .activeOne {
-    background: white;
+   background: white;
    transform: scale(1.1);
    border:1px solid lightgray;
-      box-shadow: 0.5rem 0.5rem 1rem lightgray;
+   box-shadow: 0.5rem 0.5rem 1rem lightgray;
 
 }
 main nav ul li a:hover{
@@ -133,6 +142,7 @@ li > a {
     color: black;
     border-radius: 10%;
     transition: 0.5s;
+    text-shadow: 0.1rem 0.1rem 0.3rem lightgrey;
 }
 .bar{
     display: none;
@@ -200,6 +210,7 @@ li > a {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+        text-shadow: 0.1rem 0.1rem 0.3rem lightgrey;
     }
     nav ul li a:hover{
          color:black;

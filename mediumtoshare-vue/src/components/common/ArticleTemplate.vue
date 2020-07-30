@@ -153,12 +153,13 @@ mounted() {
 }
 
 .post{
-    display: flex;
+   display: flex;
     flex-direction: column;
     margin-bottom: 10px;
-    box-shadow: 5px 5px 20px lightgray;
-    padding:2rem;
-   
+    padding: 2rem;
+    box-shadow: 0.5rem 0.5rem 1rem lightgrey, -0.5rem -0.5rem 1rem lightgrey;
+    border-radius: 1rem;
+    box-sizing: border-box;
 }
 
 .option {
@@ -204,6 +205,7 @@ button:hover{
    border-bottom: 1px solid gray;
 }
 textarea{
-   height:8rem;
+   resize: vertical;
+   min-height: 8rem;
 }
 </style>

@@ -17,7 +17,7 @@
             {{tab}}
           </button>
        </div>
-    </div><hr/>
+    </div>
     <div class="TabContent">
        <div>
           <MyPost :username="username" :key="currentTab" :tab="currentTab"></MyPost>
@@ -119,8 +119,6 @@ export default {
   padding-top: 3rem;
   position: relative;
   min-height: 500px;
-  box-shadow: 1rem 1rem 2rem lightgray;
-
 }
 
 .Icon {
@@ -131,6 +129,8 @@ export default {
     align-items: center;
     flex-direction: column;
     position: relative;
+    border-radius: 1rem;
+    box-shadow: 0.1rem 0.1rem 0.5rem lightgrey;
 }
 
 .btn {
@@ -161,15 +161,19 @@ export default {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-      padding:0.5rem;
+    padding:0.5rem;
+    margin-top: 2rem;
 }
 .Tabs button {
     border: none;
     background: transparent;
     margin-right: 1rem;
     transition: 0.3s;
-    font-size: 1rem;
     outline: none;
+    text-shadow: 0.1rem 0.1rem 0.3rem lightgrey;
+    font-size: 1.1rem;
+    letter-spacing: 0.05rem;
+    font-variant: petite-caps;
 }
 .Tabs button:hover {
       border-bottom: 0.25rem solid lightgray !important;

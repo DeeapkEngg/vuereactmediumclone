@@ -77,11 +77,11 @@ export default {
 }
 
 .post{
-    display: flex;
+   display: flex;
     flex-direction: column;
     margin-bottom: 10px;
-    box-shadow: 5px 5px 20px lightgray;
-    background: white;
+    border-radius: 1rem;
+    box-sizing: border-box;
 }
 .error{
     font-size: 10px;

@@ -25,7 +25,7 @@ beforeCreate () {
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
-  margin:0 6rem;
+  margin:0 auto;
    width:80%;
 }
 body{

@@ -93,10 +93,13 @@ export default {
     box-sizing: border-box;
     border-bottom: 2px solid lightgray;
     transition: 0.5s ease-in;
+    position: relative;
 }
 .box:hover{
     box-shadow: 2px 2px 20px lightgray;
+    border-radius: 2rem;
 }
+
 .postDetails{
   display: flex;
   flex-direction: column;

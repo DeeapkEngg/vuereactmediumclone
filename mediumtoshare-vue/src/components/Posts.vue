@@ -284,6 +284,10 @@ export default {
     background: transparent;
     border: none;
     outline: none;
+    text-shadow: 0.1rem 0.1rem 0.3rem lightgrey;
+    font-size: 1.1rem;
+    letter-spacing: 0.05rem;
+    font-variant: petite-caps;
 }
 .activeTab {
    border-bottom: 0.20rem solid lightgray !important;
